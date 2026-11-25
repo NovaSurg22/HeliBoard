@@ -856,6 +856,10 @@ public class LatinIME extends InputMethodService implements
     void onStartInputViewInternal(final EditorInfo editorInfo, final boolean restarting) {
         super.onStartInputView(editorInfo, restarting);
 
+        final String voiceText = VoiceInputActivity.consumePendingText(editorInfo == null ? null : editorInfo.packageName);
+        if (voiceText != null)
+            mHandler.postDelayed(() -> onTextInput(voiceText), 150);
+
         setGestureDataGatheringMode(editorInfo, restarting);
 
         mDictionaryFacilitator.onStartInput();
@@ -1415,7 +1419,7 @@ public class LatinIME extends InputMethodService implements
     // completely replace #onCodeInput.
     public void onEvent(@NonNull final Event event) {
         if (KeyCode.VOICE_INPUT == event.getKeyCode()) {
-            mRichImm.switchToShortcutIme(this);
+            startVoiceInput();
         }
         InputTransaction completeInputTransaction =
                 mInputLogic.onCodeInput(mSettings.getCurrent(), event, mKeyboardSwitcher.getKeyboardCapsMode(), mHandler);
@@ -1728,6 +1732,18 @@ public class LatinIME extends InputMethodService implements
                 | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
                 | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+    }
+
+    // Use the system speech recognizer dialog in the current keyboard language. Switching to a
+    // separate voice IME is only the fallback, as e.g. Google voice typing closes immediately.
+    private void startVoiceInput() {
+        if (!VoiceInputActivity.isRecognizerAvailable(this)) {
+            mRichImm.switchToShortcutIme(this);
+            return;
+        }
+        final EditorInfo editorInfo = getCurrentInputEditorInfo();
+        VoiceInputActivity.start(this, mRichImm.getCurrentSubtypeLocale().toLanguageTag(),
+                editorInfo == null ? null : editorInfo.packageName);
     }
 
     public void launchEmojiSearch() {

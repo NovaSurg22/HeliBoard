@@ -20,7 +20,6 @@ import helium314.keyboard.keyboard.internal.KeyboardParams
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode.checkAndConvertCode
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyLabel.convertFlorisLabel
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyLabel.rtlLabel
-import helium314.keyboard.latin.RichInputMethodManager
 import helium314.keyboard.latin.common.Constants
 import helium314.keyboard.latin.common.LocaleUtils.constructLocale
 import helium314.keyboard.latin.common.StringUtils
@@ -99,14 +98,7 @@ sealed interface KeyData : AbstractKeyData {
             val keys = mutableListOf<String>()
             if (!params.mId.deviceLocked)
                 keys.add("!icon/clipboard_normal_key|!code/key_clipboard")
-            if (!params.mId.emojiKeyEnabled && !params.mId.element.isNumberLayout)
-                keys.add("!icon/emoji_normal_key|!code/key_emoji")
-            if (!params.mId.languageSwitchKeyEnabled && !params.mId.element.isNumberLayout && RichInputMethodManager.canSwitchLanguage())
-                keys.add("!icon/language_switch_key|!code/key_language_switch")
-            if (!params.mId.oneHandedModeEnabled && !Settings.getValues().mIsFloatingKeyboard)
-                keys.add("!icon/start_onehanded_mode_key|!code/key_toggle_onehanded")
-            if (!params.mId.deviceLocked)
-                keys.add(ToolbarKey.FLOATING.name.lowercase())
+            // custom: only clipboard and settings in the comma popup
             if (!params.mId.deviceLocked)
                 keys.add("!icon/settings_key|!code/key_settings")
             if (shouldShowTldPopups(params)) {
