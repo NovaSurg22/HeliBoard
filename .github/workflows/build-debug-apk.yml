@@ -26,21 +26,21 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleCustom
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: HeliBoard-debug
-          path: app/build/outputs/apk/debug/*-debug*.apk
+          path: app/build/outputs/apk/custom/*.apk
 
       - name: Publish APK as release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cp app/build/outputs/apk/debug/*-debug*.apk HeliBoard-voice-comma.apk
+          cp app/build/outputs/apk/custom/*.apk HeliBoard-voice-comma.apk
           gh release delete voice-comma-build --yes --cleanup-tag || true
-          gh release create voice-comma-build HeliBoard-voice-comma.apk --target "${{ github.sha }}" --title "HeliBoard v4.3-beta1 + voice fix + comma popup" --notes "Debug build from branch voice-fix-comma-popup" --prerelease
+          gh release create voice-comma-build HeliBoard-voice-comma.apk --target "${{ github.sha }}" --title "HeliBoard v4.3-beta1 + voice fix + comma popup" --notes "Optimized build from branch voice-fix-comma-popup" --prerelease
 
       - name: Archive reports for failed job
         uses: actions/upload-artifact@v4

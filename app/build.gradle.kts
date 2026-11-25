@@ -42,6 +42,12 @@ android {
             isJniDebuggable = false
             applicationIdSuffix = ".debug"
         }
+        create("custom") { // optimized like release, installable without a release key
+            initWith(getByName("release"))
+            signingConfig = signingConfigs.getByName("debug")
+            applicationIdSuffix = ".custom"
+            matchingFallbacks += listOf("release")
+        }
         create("runTests") { // build variant for running tests on CI that skips tests known to fail
             isMinifyEnabled = false
             isJniDebuggable = false
